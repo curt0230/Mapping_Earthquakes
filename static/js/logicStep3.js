@@ -68,10 +68,15 @@ d3.json(earthquakeData).then(function(data) {
     pointToLayer: function(feature, latlng) {
                 console.log(data);
                 return L.circleMarker(latlng);
-            },
-        // We set the style for each circleMarker using our styleInfo function.
-        style: styleInfo
-        }).addTo(map);
+        },
+    // We set the style for each circleMarker using our styleInfo function.
+    style: styleInfo,
+    // We create a popup for each circleMarker to display the magnitude and
+    //  location of the earthquake after the marker has been created and styled.
+    onEachFeature: function(feature, layer) {
+        layer.bindPopup("Magnitude: " + feature.properties.mag + "<hr><br>Location: " + feature.properties.place);
+    }
+    }).addTo(map);
     });
 
 // This function determines the radius of the earthquake marker based on its magnitude.
@@ -85,20 +90,20 @@ function getRadius(magnitude) {
 
 // This function determines the color of the circle based on the magnitude of the earthquake.
 function getColor(magnitude) {
-  if (magnitude > 5) {
-    return "#ea2c2c";
+    if (magnitude > 5) {
+      return "#ea2c2c";
+    }
+    if (magnitude > 4) {
+      return "#ea822c";
+    }
+    if (magnitude > 3) {
+      return "#ee9c00";
+    }
+    if (magnitude > 2) {
+      return "#eecc00";
+    }
+    if (magnitude > 1) {
+      return "#d4ee00";
+    }
+    return "#98ee00";
   }
-  if (magnitude > 4) {
-    return "#ea822c";
-  }
-  if (magnitude > 3) {
-    return "#ee9c00";
-  }
-  if (magnitude > 2) {
-    return "#eecc00";
-  }
-  if (magnitude > 1) {
-    return "#d4ee00";
-  }
-  return "#98ee00";
-}
