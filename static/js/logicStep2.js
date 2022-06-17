@@ -35,7 +35,7 @@ let map = L.map('mapid', {
 L.control.layers(baseMaps).addTo(map);
 
 // Accessing the Toronto neighborhoods GeoJSON URL.
-let torontoHoods = "https://raw.githubusercontent.com/curt0230/Mapping_Earthquakes/Mapping_GeoJSON_Polygons/static/data/torontoNeighborhoods.json";
+let earthquakeData = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 let myStyle = {
     color: "#ffffa1",
@@ -43,7 +43,7 @@ let myStyle = {
 };
 
 // Grabbing our GeoJSON data.
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson").then(function(data) {
+d3.json(earthquakeData).then(function(data) {
     console.log(data);
     // This function returns the style data for each of the earthquakes we plot on
     // the map. We pass the magnitude of the earthquake into a function
@@ -54,36 +54,31 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geoj
         fillOpacity: 1,
         fillColor: "#ffae42",
         color: "#000000",
-        radius: getRadius(
+        radius: getRadius(feature.properties.mag),
             // This function determines the radius of the earthquake marker based on its magnitude.
             // Earthquakes with a magnitude of 0 will be plotted with a radius of 1.
-            function getRadius(magnitude) {
-            if (magnitude === 0) {
-                return 1;
-            }
-            return magnitude * 4;
-            }),
         stroke: true,
         weight: 0.5
         };
     }
     // Creating a GeoJSON layer with the retrieved data.
-    // Creating a GeoJSON layer with the retrieved data.
   L.geoJSON(data, {
 
     // We turn each feature into a circleMarker on the map.
-    
     pointToLayer: function(feature, latlng) {
                 console.log(data);
                 return L.circleMarker(latlng);
             },
-          // We set the style for each circleMarker using our styleInfo function.
+        // We set the style for each circleMarker using our styleInfo function.
         style: styleInfo
         }).addTo(map);
     });
-    // L.geoJSON(data, {
-    //     style: myStyle,
-    //     onEachFeature: function(feature,layer){
-    //         console.log(layer);
-    //         layer.bindPopup("<h4>Airline:" + feature.properties.airline + "</h4><h4>Destination: " + feature.properties.dst + "</h4>");
-    //     }}).addTo(map);});
+
+// This function determines the radius of the earthquake marker based on its magnitude.
+// Earthquakes with a magnitude of 0 will be plotted with a radius of 1.
+function getRadius(magnitude) {
+    if (magnitude === 0) {
+      return 1;
+    }
+    return magnitude * 4;
+  }
