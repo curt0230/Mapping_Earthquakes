@@ -31,12 +31,13 @@ let baseMaps = {
 // 1. Add a 3rd layer group for the major earthquake data.
 let allEarthquakes = new L.LayerGroup();
 let tectonicPlates = new L.LayerGroup();
-
+let majorEarthquakes = new L.LayerGroup();
 
 // 2. Add a reference to the major earthquake group to the overlays object.
 let overlays = {
   "Earthquakes": allEarthquakes,
-  "Tectonic Plates": tectonicPlates
+  "Tectonic Plates": tectonicPlates,
+  "Major Earthquakes": majorEarthquakes
 };
 
 // Then we add a control to the map that will allow the user to change which
@@ -99,9 +100,9 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
         },
       // We set the style for each circleMarker using our styleInfo function.
     style: styleInfo,
-     // We create a popup for each circleMarker to display the magnitude and location of the earthquake
-     //  after the marker has been created and styled.
-     onEachFeature: function(feature, layer) {
+    // We create a popup for each circleMarker to display the magnitude and location of the earthquake
+    //  after the marker has been created and styled.
+    onEachFeature: function(feature, layer) {
       layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place);
     }
   }).addTo(allEarthquakes);
@@ -167,21 +168,23 @@ legend.onAdd = function() {
 
 
   // Use d3.json to make a call to get our Tectonic Plate geoJSON data.
-let bounds = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+  let bounds = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
-let boundStyle = {
-    "color": "purple",
-    "weight": 1,
-    "opacity": .5
-};
+  let boundStyle = {
+      "color": "purple",
+      "weight": 1,
+      "opacity": .5
+  };
 
-// Grabbing our GeoJSON data.
-d3.json(bounds).then(function(boundData) {
+  // Grabbing our GeoJSON data.
+  d3.json(bounds).then(function(boundData) {
     console.log(boundData);
     L.geoJSON(boundData, {
         style: boundStyle,
         onEachFeature: function(feature,layer){
             console.log(layer);
             layer.bindPopup("<h4>Name:" + feature.properties.Name + "</h4>");
-        }}).addTo(map);});
+        }}).addTo(tectonicPlates);
+      
+      tectonicPlates.addTo(map)});
 });
